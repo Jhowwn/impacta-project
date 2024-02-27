@@ -38,7 +38,6 @@ model Product {
 
 model Attachment {
   id         String  @id @default(uuid())
-  title      String
   url        String
   product    Product @relation(fields: [product_id], references: [id])
   product_id String
