@@ -2,7 +2,7 @@ import { Either, left, right } from "@/core/either";
 import { User } from "@prisma/client";
 import { hash } from 'bcryptjs';
 import { UsersRepository } from "../../repositories/users-repository";
-import { UserAlreadyExistsError } from "../errors/user-already-exists-error";
+import { UserAlreadyExistsError } from "../../utils/errors/user-already-exists-error";
 
 interface RegisterUserServiceRequest {
   name: string;

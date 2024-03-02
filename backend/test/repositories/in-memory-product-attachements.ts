@@ -1,4 +1,4 @@
-import { ProductAttachment } from "@/service/entities/product-attachment";
+import { ProductAttachment } from "@/utils/entities/product-attachment";
 import { ProductAttachmentsRepository } from "../../src/repositories/product-attachments-repository";
 
 export class InMemoryProductAttachment implements ProductAttachmentsRepository {

@@ -1,9 +1,9 @@
 import { Either, right } from "@/core/either";
 import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { ProductsRepository } from "@/repositories/product-repository";
-import { Product } from "../entities/product";
-import { ProductAttachment } from "../entities/product-attachment";
-import { ProductAttachmentList } from "../entities/product-attachment-list";
+import { Product } from "../../utils/entities/product";
+import { ProductAttachment } from "../../utils/entities/product-attachment";
+import { ProductAttachmentList } from "../../utils/entities/product-attachment-list";
 
 interface ProductUseCaseRequest {
   name: string,

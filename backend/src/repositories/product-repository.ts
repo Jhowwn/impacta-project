@@ -1,4 +1,4 @@
-import { Product } from '@/service/entities/product';
+import { Product } from '@/utils/entities/product';
 
 export abstract class ProductsRepository {
   abstract findById(id: string): Promise<Product | null>

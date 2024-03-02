@@ -5,7 +5,7 @@ import { RegisterUserService } from "./register";
 let usersRepository: InMemoryUsersRepository
 let sut: RegisterUserService
 
-describe('Register Use Case', () => {
+describe('Register Service', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository()
     sut = new RegisterUserService(usersRepository)

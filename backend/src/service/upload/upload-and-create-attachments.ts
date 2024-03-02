@@ -1,8 +1,8 @@
 import { Either, left, right } from "@/core/either"
 import { AttachmentsRepository } from "@/repositories/attachment-repository"
 import { Uploader } from "@/storage/uploader"
-import { Attachment } from "../entities/attachment"
-import { InvalidAttachmentTypeError } from "../errors/Invalid-attachment-error"
+import { Attachment } from "../../utils/entities/attachment"
+import { InvalidAttachmentTypeError } from "../../utils/errors/Invalid-attachment-error"
 
 interface UploadAndCreateAttachmentRequest {
   fileName: string

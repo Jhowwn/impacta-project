@@ -1,5 +1,5 @@
-import { UserAlreadyExistsError } from "@/service/errors/user-already-exists-error";
-import { makeRegisterUseCase } from "@/service/factories/make-register-use-case";
+import { UserAlreadyExistsError } from "@/utils/errors/user-already-exists-error";
+import { makeRegisterService } from "@/utils/factories/make-register-service";
 import { Request, Response } from "express";
 import { z } from "zod";
 
@@ -13,7 +13,7 @@ export async function CreateAccountController(req: Request, res: Response) {
   const { name, email, password } = createAccountBodySchema.parse(req.body);
 
   try {
-    const registerUserService = makeRegisterUseCase()
+    const registerUserService = makeRegisterService()
 
     const result = await registerUserService.execute({
       name,

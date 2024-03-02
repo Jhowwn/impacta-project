@@ -1,5 +1,5 @@
 import { ProductsRepository } from "@/repositories/product-repository";
-import { Product } from "@/service/entities/product";
+import { Product } from "@/utils/entities/product";
 import { ProductAttachmentsRepository } from "../../src/repositories/product-attachments-repository";
 
 export class InMemoryProductsRepository implements ProductsRepository {

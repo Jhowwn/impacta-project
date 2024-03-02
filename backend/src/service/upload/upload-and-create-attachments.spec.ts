@@ -1,6 +1,6 @@
 import { InMemoryAttachmentsRepository } from "test/repositories/in-memory-attachments-repository";
 import { FakeUploader } from "test/storage/fake-uploader";
-import { InvalidAttachmentTypeError } from "../errors/Invalid-attachment-error";
+import { InvalidAttachmentTypeError } from "../../utils/errors/Invalid-attachment-error";
 import { UploadAndCreateAttachmentService } from "./upload-and-create-attachments";
 
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
