@@ -8,15 +8,15 @@ export interface ProductProps {
   description: string
   price: string
   stock: number
-  userId: UniqueEntityID
+  user_id: UniqueEntityID
   createdAt: Date
   updatedAt?: Date | null
   attachments: ProductAttachmentList
 }
 
 export class Product extends Entity<ProductProps> {
-  get userId() {
-    return this.props.userId
+  get user_id() {
+    return this.props.user_id
   }
 
   get name() {

@@ -1,10 +1,19 @@
-import { ProductAttachment } from "@/utils/entities/product-attachment";
+import { Attachment, Prisma } from "@prisma/client";
+import { randomUUID } from "node:crypto";
 import { ProductAttachmentsRepository } from "../../src/repositories/product-attachments-repository";
 
 export class InMemoryProductAttachment implements ProductAttachmentsRepository {
-  public items: ProductAttachment[] = [];
+  public items: Attachment[] = [];
 
-  async createMany(attachments: ProductAttachment[]): Promise<void>  {
-    this.items.push(...attachments)
+  async createMany(data: Prisma.AttachmentUncheckedCreateInput): Promise<Attachment> {
+    const attachments = {
+      id: data.id ?? randomUUID(),
+      product_id: data.product_id ?? randomUUID(),
+      url: data.url,
+    }
+
+    await this.items.push(attachments)
+
+    return attachments
   }
 }

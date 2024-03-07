@@ -1,45 +1,73 @@
 import { Either, left, right } from "@/core/either"
-import { AttachmentsRepository } from "@/repositories/attachment-repository"
-import { Uploader } from "@/storage/uploader"
-import { Attachment } from "../../utils/entities/attachment"
+import { ProductAttachmentsRepository } from "@/repositories/product-attachments-repository"
+import { Attachment } from "@prisma/client"
 import { InvalidAttachmentTypeError } from "../../utils/errors/Invalid-attachment-error"
 
 interface UploadAndCreateAttachmentRequest {
-  fileName: string
-  fileType: string
-  body: Buffer
+  files: {
+    fieldname: string,
+    originalname: string,
+    encoding: string,
+    mimetype: string
+    path: string
+    destination: string
+    filename: string
+    size: number
+  }[]
+  product_id: string
+}
+
+interface attachemntProps {
+  id: string
+  url: string
+  product_id: string
 }
 
 type UploadAndCreateAttachmentResponse = Either<
   InvalidAttachmentTypeError,
-  { attachment: Attachment }
+  { attachments: Attachment[] }
 >
 
 export class UploadAndCreateAttachmentService {
   constructor(
-    private attachmentRepository: AttachmentsRepository,
-    private uploader: Uploader
+    private attachmentRepository: ProductAttachmentsRepository,
   ) { }
 
   async execute({
-    fileName,
-    fileType,
-    body
+    files,
+    product_id,
   }: UploadAndCreateAttachmentRequest): Promise<UploadAndCreateAttachmentResponse> {
-    if (!/^(image\/(jpeg|png))$|^application\/pdf$/.test(fileType)) {
-      return left(new InvalidAttachmentTypeError(fileType))
+    let attachments: attachemntProps[] = []
+    let errors: any = [];
+
+    const promises = files.map(async (file) => {
+      if (!/^(image\/(jpeg|png))$|^application\/pdf$/.test(file.mimetype)) {
+        errors.push(new InvalidAttachmentTypeError(file.mimetype));
+        return;
+      }
+
+      try {
+        // Aguarde a criação do anexo e adicione-o ao array attachments
+        const attachment = await this.attachmentRepository.createMany({
+          url: file.path,
+          product_id,
+        });
+        attachments.push(attachment);
+      } catch (error) {
+        // Trate o erro aqui conforme necessário
+        console.error('Erro ao criar anexo:', error);
+        errors.push('Error to create an attachment');
+      }
+    });
+
+    await Promise.all(promises);
+
+    if (errors.length > 0) {
+      return left(errors[0]);
     }
-      const {url} = await this.uploader.upload({fileName, fileType, body})
 
-      const attachment = Attachment.create({
-        title: fileName,
-        url,
-      })
-
-      await this.attachmentRepository.create(attachment)
-
-      return right({
-        attachment
-      })
+    return right({
+      attachments
+    })
   }
 }

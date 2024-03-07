@@ -1,10 +1,10 @@
 import { ProductsRepository } from "@/repositories/product-repository";
-import { Product } from "@/utils/entities/product";
+import { Prisma, Product } from "@prisma/client";
+import { randomUUID } from "node:crypto";
 import { ProductAttachmentsRepository } from "../../src/repositories/product-attachments-repository";
 
 export class InMemoryProductsRepository implements ProductsRepository {
   constructor(private productAttachmentsRepository: ProductAttachmentsRepository) { }
-
   public items: Product[] = []
 
   async findById(id: string): Promise<Product | null> {
@@ -27,13 +27,20 @@ export class InMemoryProductsRepository implements ProductsRepository {
     return product
   }
 
-  async create(product: Product) {
-    this.items.push(product)
+  async create(data: Prisma.ProductUncheckedCreateInput): Promise<Product> {
+    const product = {
+      id: data.id ?? randomUUID(),
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      stock: data.stock,
+      user_id: data.user_id,
+      created_at: new Date(),
+      updated_at: new Date() ?? null,
+    };
 
-    await this.productAttachmentsRepository.createMany(
-      product.attachments.getItems()
-    )
+    await this.items.push(product)
 
-    this.items.push(product);
+    return product
   }
 }

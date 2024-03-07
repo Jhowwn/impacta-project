@@ -1,5 +1,5 @@
-import { ProductAttachment } from "@/utils/entities/product-attachment";
+import { Attachment, Prisma } from "@prisma/client";
 
 export interface ProductAttachmentsRepository {
-  createMany(attachments: ProductAttachment[]): Promise<void>;
+  createMany(data: Prisma.AttachmentUncheckedCreateInput): Promise<Attachment>;
 }

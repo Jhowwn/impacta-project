@@ -1,9 +1,6 @@
 import { Either, right } from "@/core/either";
-import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import { ProductsRepository } from "@/repositories/product-repository";
-import { Product } from "../../utils/entities/product";
-import { ProductAttachment } from "../../utils/entities/product-attachment";
-import { ProductAttachmentList } from "../../utils/entities/product-attachment-list";
+import { Product } from "@prisma/client";
 
 interface ProductUseCaseRequest {
   name: string,
@@ -11,7 +8,6 @@ interface ProductUseCaseRequest {
   price: string,
   stock: number,
   user_id: string,
-  attachmentsIds: string[],
 }
 
 type ProductUseCaseResponse = Either<
@@ -32,26 +28,14 @@ export class CreateProductService {
     price,
     stock,
     user_id,
-    attachmentsIds,
   }: ProductUseCaseRequest): Promise<ProductUseCaseResponse> {
-    const product = Product.create({
+    const product = await this.productsRepository.create({
       name,
       description,
       price,
       stock,
-      userId: new UniqueEntityID(user_id),
-    }) 
-
-    const productAttachments = attachmentsIds.map((attachmentId) => {
-      return ProductAttachment.create({
-        attachmentId: new UniqueEntityID(attachmentId),
-        productId: product.id,
-      })
+      user_id,
     })
-
-    product.attachments = new ProductAttachmentList(productAttachments)
-
-    await this.productsRepository.create(product)
 
     return right({
       product,

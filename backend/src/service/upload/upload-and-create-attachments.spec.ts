@@ -1,50 +1,51 @@
-import { InMemoryAttachmentsRepository } from "test/repositories/in-memory-attachments-repository";
-import { FakeUploader } from "test/storage/fake-uploader";
+import { InMemoryProductAttachment } from "test/repositories/in-memory-product-attachements";
 import { InvalidAttachmentTypeError } from "../../utils/errors/Invalid-attachment-error";
 import { UploadAndCreateAttachmentService } from "./upload-and-create-attachments";
 
-let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
-let fakeUploader: FakeUploader
+let inMemoryAttachmentsRepository: InMemoryProductAttachment
 let sut: UploadAndCreateAttachmentService
+
+const mockFiles = [
+  {
+    fieldname: 'file',
+    originalname: 'test.jpg',
+    encoding: '7bit',
+    mimetype: 'image/jpeg',
+    path: '/path/to/test.jpg',
+    destination: '/path/to',
+    filename: 'test.jpg',
+    size: 1000,
+  },
+];
 
 describe('Upload and create attachments', () => {
   beforeEach(() => {
-    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
-    fakeUploader = new FakeUploader()
+    inMemoryAttachmentsRepository = new InMemoryProductAttachment()
 
     sut = new UploadAndCreateAttachmentService(
       inMemoryAttachmentsRepository,
-      fakeUploader
     )
   })
 
-  it('should be avle to upload and create an attachment', async () => {
+  it('should be able to upload and create an attachment', async () => {
     const result = await sut.execute({
-      fileName: 'profile.png',
-      fileType: 'image/png',
-      body: Buffer.from('')
+      files: mockFiles,
+      product_id: '1'
     })
 
-    expect(result.isRight()).toBe(true)
-    expect(result.value).toEqual({
-      attachment: inMemoryAttachmentsRepository.items[0],
-    })
-    expect(fakeUploader.uploads).toHaveLength(1)
-    expect(fakeUploader.uploads[0]).toEqual(
-      expect.objectContaining({
-        fileName: 'profile.png',
-      }),
-    )
+    expect(result.isRight()).toBeTruthy();
+    expect(result.value.attachments).toHaveLength(1);
+    expect(result.value.attachments[0].url).toBe('/path/to/test.jpg');
+    expect(result.value.attachments[0].product_id).toBe('1');
   })
 
   it('should not be able to upload an attachment with invalid file type', async () => {
     const result = await sut.execute({
-      fileName: 'profile.mp3',
-      fileType: 'audio/mpeg',
-      body: Buffer.from(''),
+      files: [{ ...mockFiles[0], mimetype: 'text/plain' }],
+      product_id: '1'
     })
 
-    expect(result.isLeft()).toBe(true)
-    expect(result.value).toBeInstanceOf(InvalidAttachmentTypeError)
+    expect(result.isLeft()).toBeTruthy();
+    expect(result.value).toBeInstanceOf(InvalidAttachmentTypeError);
   })
 })
