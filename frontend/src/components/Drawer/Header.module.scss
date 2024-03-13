@@ -1,0 +1,49 @@
+.header {
+    background: 'white';
+    display: flex;
+    justify-content: space-between;
+    border-width: 3px;
+    border-style: solid;
+    border-image:
+        linear-gradient(to right, #13a338 0%, #1f3876 50%, red 100%) 0 0 100% 0;
+}
+
+.ative {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 16px;
+    border: 0;
+    opacity: 1;
+}
+
+.title {
+    margin-top: 1rem;
+    margin-left: 1rem;
+    font-weight: bold;
+    color: var(--red-700);
+}
+
+.nav {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-around;
+
+    a {
+        margin-right: 2rem;
+
+        &+a {
+            margin-right: 2rem;
+        }
+    }
+}
+
+.menu {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.MuiMenu-list {
+    ul {
+        background: var(--gray-600);
+    }
+}
