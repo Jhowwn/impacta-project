@@ -1,28 +1,25 @@
 'use client'
 
-import { api } from '@/api/baseUrl'
 import { Button } from '@mui/material'
-import { useRouter } from 'next/navigation'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useContext, useState } from 'react'
+import { AuthContext } from '../../../context/AuthContext'
 import styles from './login.module.css'
 
 export default function Login() {
-  const router = useRouter()
-
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+
+  const { signIn } = useContext(AuthContext)
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
-    const response = await api.post("sessions", {
+    const data = {
       email,
       password
-    })
+    }
 
-    localStorage.setItem("token", response.data.token)
-
-    router.push('/product')
+    await signIn(data)
   }
 
   return (

@@ -5,13 +5,15 @@ import { FormEvent, useState } from "react";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, Grid, IconButton } from "@mui/material";
 
 import { api } from "@/api/baseUrl";
-import styles from './product.module.css';
+import Image from "next/image";
+import styles from './product.module.scss';
 
 interface FileProps {
   name: string;
+  url: string;
 }
 
 export default function CreateProduct() {
@@ -23,16 +25,20 @@ export default function CreateProduct() {
   const [selectedFiles, setSelectedFiles] = useState<FileProps[]>([]);
 
   const handleFileChange = (event: any) => {
-    if (!/^(image\/(jpeg|png))$|^application\/pdf$/.test(event.target.files[0].type)) {
-      return alert('Invalid file type: ' + event.target.files[0].type)
-    }
+    for (const file of event.target.files) {
+      if (!/^(image\/(jpeg|png))$|^application\/pdf$/.test(file.type)) {
+        return alert('Invalid file type: ' + file.type)
+      }
 
-    if (selectedFiles.length > 2) {
-      return alert('Multiple files selected: ')
-    }
+      if (selectedFiles.length > 2) {
+        return alert('Multiple files selected: ')
+      }
 
-    if (selectedFiles.includes(event.target.files[0].name)) {
-      return alert('File already selected')
+      if (selectedFiles.includes(file.name)) {
+        return alert('File already selected')
+      }
+
+      file.url = URL.createObjectURL(file)
     }
 
     setSelectedFiles([...selectedFiles, ...event.target.files]);
@@ -46,8 +52,6 @@ export default function CreateProduct() {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
-
-    const token = localStorage.getItem("token")
 
     const data = {
       name,
@@ -72,21 +76,24 @@ export default function CreateProduct() {
     }
 
     const formData = new FormData();
-    selectedFiles.forEach(file => {
-      formData.append('attachment', file.name);
+    selectedFiles.forEach((file) => {
+      console.log(file)
+      formData.append('attachment', file);
+      console.log(formData)
     });
+
 
     await api.post('products', data, {
       headers: {
         'Content-type': 'application/json',
-        Authorization: `Bearer ${token}`
       }
     }).then(async response => {
-      await api.post(`produ ct/${response.data.id}/attachment`, formData, {
+      await api.post(`product/${response.data.id}/attachment`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
         }
+      }).then(response => {
+        console.log(response)
       })
     })
       .catch(error => {
@@ -96,87 +103,99 @@ export default function CreateProduct() {
 
   return (
     <main className={styles.main}>
+      <h1 className={styles.title}> Novo Produto</h1>
       <form onSubmit={handleSubmit} className={styles.form}>
-        <h1>Novo Produto</h1>
-        <input
-          type="text"
-          placeholder='Nome do Produto'
-          className={styles.input}
-          value={name}
-          onChange={e => setName(e.target.value)}
-        />
+        <Grid container spacing={2} marginBottom={'2rem'}>
+          <Grid item xs={6}>
+            <input
+              type="text"
+              placeholder='Nome do Produto'
+              className={styles.input}
+              value={name}
+              onChange={e => setName(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <input
+              type='text'
+              placeholder='Descrição'
+              className={styles.input}
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <input
+              type='text'
+              placeholder='Preço'
+              className={styles.input}
+              value={price}
+              onChange={e => setPrice(e.target.value)}
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <input
+              type='number'
+              placeholder='Estoque'
+              className={styles.input}
+              value={stock}
+              onChange={e => setStock(e.target.valueAsNumber)}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button
+              component="label"
+              variant="contained"
+              startIcon={<CloudUploadIcon />}
+              disabled={selectedFiles.length > 2 ? true : false}
+            >
+              Adicionar imagem
+              <input
+                type="file"
+                onChange={handleFileChange}
+                style={{ display: 'none' }}
+                multiple
+              />
+            </Button>
+          </Grid>
 
-        {/* <TextField
-        error={!name ? true :  false}
-        id="outlined-required"
-        label={name ? false : "Nome do Produto"}
-        defaultValue={name}
-        helperText={name ? false :  true}
-        variant="standard"
-      /> */}
-        <input
-          type='text'
-          placeholder='Descrição'
-          className={styles.input}
-          value={description}
-          onChange={e => setDescription(e.target.value)}
-        />
-        <input
-          type='text'
-          placeholder='Preço'
-          className={styles.input}
-          value={price}
-          onChange={e => setPrice(e.target.value)}
-        />
-        <input
-          type='number'
-          placeholder='Estoque'
-          className={styles.input}
-          value={stock}
-          onChange={e => setStock(e.target.valueAsNumber)}
-        />
+          <Grid container>
+            {selectedFiles.map((file, index) => (
+              <Grid item xs={2} key={file.name}
+                component="section"
+                display='flex'
+                flexDirection='column'
+                flex='1'
+                marginTop="2rem"
+              >
+                <Image src={file.url} width={200} height={200} alt='' />
+                <Box style={{
+                  backgroundColor: "gray",
+                  color: "white",
+                  width: "200px",
+                  height: "25px",
+                  marginTop: "-24px",
+                  opacity: 0.8
+                }}
+                  flex-direction="row"
+                  textAlign="center"
+                >
+                  <IconButton
+                    onClick={() => handleDeleteImage(file.name)}
+                    sx={{ p: 0, borderRadius: '1px' }}
+                    aria-label="delete"
+                    style={{ opacity: 1.0 }}
+                  >
+                    <DeleteIcon style={{ color: 'white' }} />
+                  </IconButton>
+                </Box>
+              </Grid>
+            ))
+            }
+          </Grid>
+        </Grid>
 
         <Button variant="contained" color="secondary" type="submit">Confirmar</Button>
-
-        <Button
-          component="label"
-          variant="contained"
-          startIcon={<CloudUploadIcon />}
-          disabled={selectedFiles.length > 2 ? true : false}
-        >
-          Adicionar imagem
-          <input
-            type="file"
-            onChange={handleFileChange}
-            style={{ display: 'none' }}
-            multiple
-          />
-        </Button>
-        {selectedFiles.map(file => (
-          <Box key={file.name}
-            component="section"
-            sx={{ p: 2, border: '1px dashed red' }}
-            display='flex'
-            flexDirection='row'
-            flex='1'
-            p={2}
-            alignItems='center'
-            justifyContent='space-between'
-          >
-            <p>
-              {file.name}
-            </p>
-            <IconButton
-              onClick={() => handleDeleteImage(file.name)}
-              size='small'
-              style={{ color: "white" }} sx={{ p: 0, borderRadius: '1px' }}
-              aria-label="delete"
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        ))
-        }
       </form>
     </main>
   )

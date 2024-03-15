@@ -1,13 +1,16 @@
 'use client'
 
-import { api } from "@/api/baseUrl"
-import Router from "next/router"
-import { ReactNode, createContext, useEffect, useState } from "react"
+import { api } from "@/api/baseUrl";
+import { useRouter } from "next/navigation";
+import { ReactNode, createContext, useEffect, useState } from "react";
+
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies(null, { path: '/' });
 
 type User = {
   email: string
-  permissions: string[]
-  roles: string[]
+  role: string
 }
 
 type SignInCredentials = {
@@ -17,7 +20,7 @@ type SignInCredentials = {
 
 type AuthContextData = {
   signIn: (credential: SignInCredentials) => Promise<void>
-  signOut: () => void
+  SignOut: () => void
   user: User;
   isAuthenticated: boolean
 }
@@ -30,14 +33,10 @@ export const AuthContext = createContext({} as AuthContextData)
 
 let authChannel: BroadcastChannel;
 
-export function signOut() {
-  localStorage.removeItem("token")
-  authChannel.postMessage('signOut')
-  Router.push('/login')
-}
-
 export function AuthProvider({ children }: AuthproviderProps) {
-  const [user, setUser] = useState<User>()
+  const router = useRouter()
+
+  const [user, setUser] = useState<User>({ email: '', role: '' })
   const isAuthenticated = !!user;
 
   useEffect(() => {
@@ -45,31 +44,43 @@ export function AuthProvider({ children }: AuthproviderProps) {
 
     authChannel.onmessage = (message) => {
       switch (message.data) {
-        case 'signOut':
-          signOut();
+        case 'SignOut':
+          SignOut();
           break;
         case 'signIn':
-          Router.push('/dashboard');
+          router.push('/');
           break;
         default:
           break;
       }
     }
-  }, [])
+  })
 
   useEffect(() => {
-    const token = localStorage.getItem("token")
-
+    const token = cookies.get("usertoken")
+    
     if (token) {
-      api.get('/me').then((response) => {
-        const { email, permissions, roles } = response.data
+      api.get('/me', {
+        headers: { Authorization: `Bearer ${token}`}
+      }).then((response) => {
+        if (!response.data) {
+          throw new Error('erro')
+        }
+        
+        const { email, role } = response.data
 
-        setUser({ email, permissions, roles })
+        setUser({ email, role })
       }).catch(() => {
-        signOut()
+        SignOut()
       })
     }
-  }, [])
+  })
+
+  function SignOut() {
+    cookies.remove('usertoken')
+    authChannel.postMessage('SignOut')
+    router.push('/login')
+  }
 
   async function signIn({ email, password }: SignInCredentials) {
     try {
@@ -78,31 +89,45 @@ export function AuthProvider({ children }: AuthproviderProps) {
         password
       })
 
-      const { token, permissions, roles } = response.data
+      const { token } = response.data
 
-      localStorage.set("token", token, {
-        expires: 24 * 60 * 60 * 1000,
-        httpOnly: true,
-        path: '/',
-      })
+      if (!token) {
+        return alert('fail to login')
+      }
 
-      setUser({
-        email,
-        permissions,
-        roles
+      cookies.set("usertoken", token, { 
+        httpOnly: true, 
+        maxAge: 60 * 60 * 24 * 30,
       })
 
       api.defaults.headers["Authorization"] = `Bearer ${token}`
 
-      Router.push('/')
+      api.get('/me').then((response) => {
+        if (!response.data) {
+          throw new Error('erro')
+        }
+        const { email, role } = response.data
+
+
+        setUser({ email, role })
+      }).catch(() => {
+        SignOut()
+      })
+
+      router.push('/')
       authChannel.postMessage('signIn')
+
     } catch (err) {
       console.error(err)
     }
   }
 
+  if(!user || user === undefined) {
+    SignOut()
+  }
+
   return (
-    <AuthContext.Provider value={{ signIn, signOut, isAuthenticated, user }}>
+    <AuthContext.Provider value={{ signIn, SignOut, isAuthenticated, user }}>
       {children}
     </AuthContext.Provider>
   )
