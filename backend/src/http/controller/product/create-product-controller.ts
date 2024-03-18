@@ -14,19 +14,25 @@ export async function CreateProductController(req: Request, res: Response) {
   const { name, description, price, stock, userId } = createProductBodySchema.parse(req.body)
 
   try {
-  const CreateProductService = makeProductService()
+    const CreateProductService = makeProductService()
 
-  const result = await CreateProductService.execute({
-    name,
-    description,
-    price,
-    stock,
-    user_id: userId,
-  })
+    const result = await CreateProductService.execute({
+      name,
+      description,
+      price,
+      stock,
+      user_id: userId,
+    })
 
     if (result.value instanceof Error) {
       return res.status(409).send({ message: 'Erro' })
     }
+
+    if (!result.value?.product) {
+      return res.status(404).send({ message: 'Product not created!' })
+    }
+
+    return res.status(201).send(result.value.product);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ message: 'Dados inválidos', details: error.errors });
@@ -34,8 +40,4 @@ export async function CreateProductController(req: Request, res: Response) {
 
     throw error
   }
-
-  return res.status(201).send()
 }
-
-

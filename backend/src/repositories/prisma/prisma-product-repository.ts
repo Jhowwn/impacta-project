@@ -33,8 +33,10 @@ export class PrismaProductsRepository implements ProductsRepository {
   }
   
   async create(data: Product) {
-    await prisma.product.create({
+    const product = await prisma.product.create({
       data,
     })
+
+    return product
   }  
 }

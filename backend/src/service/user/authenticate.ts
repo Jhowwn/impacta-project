@@ -40,7 +40,7 @@ export class AuthenticateUserService {
         userId: user.id,
       }},
       env.JWT_SECRET,
-      { expiresIn: '1h',}
+      { expiresIn: '2h',}
     )
 
     return right({

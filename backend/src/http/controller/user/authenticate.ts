@@ -24,7 +24,12 @@ export async function AuthenticateController(req: Request, res: Response) {
 
   const { accessToken } = result.value
 
-  return res.status(200).send({
-    token: accessToken,
+  return res.cookie("token", accessToken, {
+    path: "/",
+    secure: true,
+    sameSite: true,
+    httpOnly: true,
+  }).status(200).send({
+    token: accessToken, 
   })
 }

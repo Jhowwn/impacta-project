@@ -5,7 +5,7 @@ import { FormEvent, useState } from "react";
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { Box, Button, Grid, IconButton } from "@mui/material";
+import { Box, Button, Grid, IconButton, TextField } from "@mui/material";
 
 import { api } from "@/api/baseUrl";
 import Image from "next/image";
@@ -14,23 +14,26 @@ import styles from './product.module.scss';
 interface FileProps {
   name: string;
   url: string;
+  file: File
 }
 
 export default function CreateProduct() {
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState('')
-  const [price, setPrice] = useState('')
+  const [name, setName] = useState<string>('')
+  const [description, setDescription] = useState<string>('')
+  const [price, setPrice] = useState<string>('')
   const [stock, setStock] = useState<number>()
 
   const [selectedFiles, setSelectedFiles] = useState<FileProps[]>([]);
 
   const handleFileChange = (event: any) => {
+    if (!event.target.files) return alert('No files selected')
+
     for (const file of event.target.files) {
       if (!/^(image\/(jpeg|png))$|^application\/pdf$/.test(file.type)) {
         return alert('Invalid file type: ' + file.type)
       }
 
-      if (selectedFiles.length > 2) {
+      if (selectedFiles.length + event.target.files.length > 3) {
         return alert('Multiple files selected: ')
       }
 
@@ -39,8 +42,8 @@ export default function CreateProduct() {
       }
 
       file.url = URL.createObjectURL(file)
+      file.file = file
     }
-
     setSelectedFiles([...selectedFiles, ...event.target.files]);
   };
 
@@ -53,13 +56,6 @@ export default function CreateProduct() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
 
-    const data = {
-      name,
-      description,
-      price,
-      stock
-    }
-
     if (!name) {
       return alert('Nome do produto é obrigátorio')
     }
@@ -71,34 +67,53 @@ export default function CreateProduct() {
     if (!price) {
       return alert('Preço do produto é obrigátorio')
     }
+
     if (!stock) {
       return alert('Estoque do produto é obrigátorio')
     }
 
+    const data = {
+      name,
+      description,
+      price,
+      stock
+    }
+
     const formData = new FormData();
-    selectedFiles.forEach((file) => {
-      console.log(file)
+    selectedFiles.forEach((file: any) => {
       formData.append('attachment', file);
-      console.log(formData)
     });
 
+    try {
 
-    await api.post('products', data, {
-      headers: {
-        'Content-type': 'application/json',
-      }
-    }).then(async response => {
-      await api.post(`product/${response.data.id}/attachment`, formData, {
+
+      await api.post('products', data, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-type': 'application/json',
         }
-      }).then(response => {
-        console.log(response)
+      }).then(async response => {
+        await api.post(`product/${response.data.id}/attachment`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          }
+        }).then(response => {
+          console.log(response)
+        })
       })
-    })
-      .catch(error => {
-        console.error('Erro ao enviar os arquivos:', error);
-      });
+        .catch(error => {
+          console.error('Erro ao enviar os arquivos:', error);
+        });
+
+
+      setName('');
+      setDescription('');
+      setPrice('');
+      setStock(undefined);
+      setSelectedFiles([]);
+      return alert('Produto criado com sucesso')
+    } catch (err) {
+      return alert('Não foi possivel criar seu produtp')
+    }
   }
 
   return (
@@ -114,6 +129,15 @@ export default function CreateProduct() {
               value={name}
               onChange={e => setName(e.target.value)}
             />
+            <TextField
+              id="standard-basic"
+              type="text"
+              fullWidth
+              color="error"
+              label="Nome do Produto"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              variant="standard" />
           </Grid>
           <Grid item xs={6}>
             <input

@@ -10,11 +10,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Roles {
+  vendedor
+  usuario
+}
+
 model User {
   id            String    @id @default(uuid())
   name          String
   email         String    @unique
   password_hash String
+  role          Roles     @default(vendedor)
   created_at    DateTime  @default(now())
   Product       Product[]
 

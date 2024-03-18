@@ -1,22 +1,23 @@
-import { Either, left, right } from "@/core/either"
-import { ProductAttachmentsRepository } from "@/repositories/product-attachments-repository"
-import { Attachment } from "@prisma/client"
-import { InvalidAttachmentTypeError } from "../../utils/errors/Invalid-attachment-error"
+import { Either, left, right } from "@/core/either";
+import { ProductAttachmentsRepository } from "@/repositories/product-attachments-repository";
+import { Attachment } from "@prisma/client";
+import { InvalidAttachmentTypeError } from "../../utils/errors/Invalid-attachment-error";
 
-interface UploadAndCreateAttachmentRequest {
-  files: {
-    fieldname: string,
-    originalname: string,
-    encoding: string,
-    mimetype: string
-    path: string
-    destination: string
-    filename: string
-    size: number
-  }[]
-  product_id: string
+export interface UploadFile {
+  fieldname: string;
+  originalname: string;
+  encoding: string;
+  mimetype: string;
+  size: number;
+  path: string;
+  destination: string;
+  filename: string;
 }
 
+interface UploadAndCreateAttachmentRequest {
+  files: UploadFile[];
+  product_id: string;
+}
 interface attachemntProps {
   id: string
   url: string
@@ -47,14 +48,12 @@ export class UploadAndCreateAttachmentService {
       }
 
       try {
-        // Aguarde a criação do anexo e adicione-o ao array attachments
         const attachment = await this.attachmentRepository.createMany({
           url: file.path,
           product_id,
         });
         attachments.push(attachment);
       } catch (error) {
-        // Trate o erro aqui conforme necessário
         console.error('Erro ao criar anexo:', error);
         errors.push('Error to create an attachment');
       }

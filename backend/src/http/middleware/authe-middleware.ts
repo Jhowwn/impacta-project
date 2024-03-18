@@ -4,13 +4,15 @@ import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 
 export function verifyToken(req: Request, res: Response, next: NextFunction) {
-  const token = req.header('Authorization')
+  const auth = req.headers.authorization
 
-  if (!token) {
-    return res.status(404).json({
+  if (!auth) {
+    return res.status(401).json({
       NotAllowedError
     })
   }
+
+  const [, token] = auth.split(" ")
 
   try {
     const decoded = jwt.verify(token, env.JWT_SECRET)
@@ -18,6 +20,8 @@ export function verifyToken(req: Request, res: Response, next: NextFunction) {
     if (!decoded.sub) {
       res.status(401).json({ error: 'Invalid token' });
     }
+
+    req.body.userId = decoded.sub.userId 
 
     next()
   } catch (error) {
