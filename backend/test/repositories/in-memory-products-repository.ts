@@ -5,20 +5,27 @@ import { ProductAttachmentsRepository } from "../../src/repositories/product-att
 
 export class InMemoryProductsRepository implements ProductsRepository {
   constructor(private productAttachmentsRepository: ProductAttachmentsRepository) { }
+  
   public items: Product[] = []
-
+  
   async findById(id: string): Promise<Product | null> {
     const product = this.items.find(item => item.id.toString() === id);
-
+    
     if (!product) {
       return null;
     }
-
+    
     return product
   }
 
-  async findByName(name: string): Promise<Product | null> {
-    const product = this.items.find(item => item.name === name);
+  async findByUserId(userId: string, page: number): Promise<Product[] | null> {
+    return this.items
+    .filter((item) => item.user_id === userId)
+    .slice((page - 1) * 20, page * 20)
+  }
+  
+  async findByName(name: string): Promise<Product[] | null> {
+    const product = this.items.filter(item => item.name === name);
 
     if (!product) {
       return null;
