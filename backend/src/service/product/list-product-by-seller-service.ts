@@ -11,7 +11,7 @@ type ProductServiceResponse = {
   products: Product[]
 }
 
-export class ListProductsBySeller {
+export class ListProductsBySellerService {
   constructor(
     private productsRepository: ProductsRepository
   ) { }
