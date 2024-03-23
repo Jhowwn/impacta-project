@@ -36,7 +36,5 @@ export async function FetchProductsBySellerController(req: Request, res: Respons
     if (error instanceof z.ZodError) {
       return res.status(400).json({ message: 'Dados inválidos', details: error.errors });
     }
-
-    throw error
   }
 }

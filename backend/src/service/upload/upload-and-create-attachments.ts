@@ -1,8 +1,8 @@
+import urlFile from '@/core/config/appConfig';
 import { Either, left, right } from "@/core/either";
 import { ProductAttachmentsRepository } from "@/repositories/product-attachments-repository";
 import { Attachment } from "@prisma/client";
 import { InvalidAttachmentTypeError } from "../../utils/errors/Invalid-attachment-error";
-
 export interface UploadFile {
   fieldname: string;
   originalname: string;
@@ -49,7 +49,7 @@ export class UploadAndCreateAttachmentService {
 
       try {
         const attachment = await this.attachmentRepository.createMany({
-          url: file.path,
+          url: `${urlFile.url}images/${file.filename}`,
           product_id,
         });
         attachments.push(attachment);
