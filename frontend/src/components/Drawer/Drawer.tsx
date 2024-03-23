@@ -1,6 +1,7 @@
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
+import ViewListIcon from '@mui/icons-material/ViewList';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
@@ -48,6 +49,8 @@ export default function TemporaryDrawer() {
         <Item name="Home" link="/" icon={<HomeIcon />} />
         <Divider />
         <Item name="Novo Produto" link="/product" icon={<AddCircleIcon />} />
+        <Divider />
+        <Item name="Listar Produtos" link="/listProducts" icon={<ViewListIcon />} />
         <Divider />
       </List>
     </Box>

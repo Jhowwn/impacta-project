@@ -1,21 +1,14 @@
 .main {
-  background-color: rgb(139, 133, 133);
+  background-color: rgb(219, 216, 216);
   padding: 1rem;
   min-height: 92vh;
 }
 
 .title {
-  justify-content: start;
-  align-items: start;
+  color: rgb(5, 5, 5);
+  font-weight: 400;
 }
 
 .form {
   padding: 1rem;
-}
-
-.input {
-  width: 90%;
-  padding: 0.5rem;
-  border: 1px solid black;
-  border-radius: 8px;
 }
