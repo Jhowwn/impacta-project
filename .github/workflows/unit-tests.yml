@@ -16,7 +16,7 @@ jobs:
           cache: 'npm'
         env:
           JWT_SECRET: ${{ vars.JWT_SECRET}}
-          DATABASE_URL: ${{$ vars.DATABASE_URL}}
+          DATABASE_URL: ${{ vars.DATABASE_URL}}
       -   run: npm ci
 
       - run: npm run test
