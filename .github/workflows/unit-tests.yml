@@ -3,8 +3,8 @@ name: Run Unit Tests
 on: [push]
 
 env:
-  JWT_SECRET: ${{ vars.JWT_SECRET }}
-  DATABASE_URL: ${{ vars.DATABASE_URL}}
+   JWT_SECRET: testing
+   DATABASE_URL: "postgresql://docker:docker@localhost:5432/apisolid?schema=public"
   
 jobs:
   run-unit-tests:
@@ -14,20 +14,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: mv -f backend/* .
-      - run: |
-          echo "JWT_SECRET : $JWT_SECRET"
-          echo "DATABASE_URL : $DATABASE_URL"
       - uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: 'npm'
-        env:
-          JWT_SECRET: ${{ vars.JWT_SECRET}}
-          DATABASE_URL: ${{ vars.DATABASE_URL}}
-
-      - run: |
-          echo "JWT_SECRET : $JWT_SECRET"
-          echo "DATABASE_URL : $DATABASE_URL"
       -   run: npm ci
 
       - run: npm run test
