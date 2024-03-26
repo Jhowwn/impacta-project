@@ -15,8 +15,8 @@ jobs:
       - uses: actions/checkout@v3
       - run: mv -f backend/* .
       - run: |
-          echo "JWT_SECRET : $JWT_SECRET"
-          echo "DATABASE_URL : $DATABASE_URL"
+          echo "JWT_SECRET : $vars.JWT_SECRET"
+          echo "DATABASE_URL : $vars.DATABASE_URL"
       - uses: actions/setup-node@v3
         with:
           node-version: 18
