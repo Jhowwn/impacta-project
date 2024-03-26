@@ -3,8 +3,8 @@ name: Run Unit Tests
 on: [push]
 
 env:
-  # Setting an environment variable with the value of a configuration variable
-  env_var: ${{ vars.ENV_CONTEXT_VAR }}
+  JWT_SECRET: ${{ vars.JWT_SECRET }}
+  DATABASE_URL: ${{ vars.DATABASE_URL}}
   
 jobs:
   run-unit-tests:
