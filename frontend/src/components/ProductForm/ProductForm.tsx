@@ -1,3 +1,4 @@
+import { FileProps } from '@/app/product/page';
 import { formatMoney } from '@/utils/formatMoney/formatMoney';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { Button, Grid, TextField } from "@mui/material";
@@ -12,6 +13,7 @@ interface ProductFormProps {
   stock: number
   setStock: (stock: number) => void
   handleFileChange: (event: any) => void
+  selectedFiles: FileProps[]
 }
 
 export default function ProductForm({
@@ -24,6 +26,7 @@ export default function ProductForm({
   stock,
   setStock,
   handleFileChange,
+  selectedFiles
 }: ProductFormProps) {
 
   return (
@@ -85,6 +88,7 @@ export default function ProductForm({
             component="label"
             color='success'
             variant="contained"
+            disabled={selectedFiles.length > 2 ? true : false}
             startIcon={<CloudUploadIcon />}
           >
             Adicionar imagem
