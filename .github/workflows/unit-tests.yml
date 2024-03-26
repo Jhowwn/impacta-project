@@ -14,8 +14,9 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-      - run: echo $JWT_SECRET
-      - run: echo $DATABASE_URL
-      - run: npm ci
+        env:
+          JWT_SECRET: $JWT_SECRET
+          DATABASE_URL: $DATABASE_URL
+      -   run: npm ci
 
       - run: npm run test
