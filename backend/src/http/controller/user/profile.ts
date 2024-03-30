@@ -2,11 +2,9 @@ import { makeGetUserProfileUseService } from "@/utils/factories/make-get-user-pr
 import { Request, Response } from "express"
 
 export async function profile(req: Request, res: Response) {
-  console.log('teste', req.body.userId)
   const getUserProfile = makeGetUserProfileUseService()
 
   const {userId} = req.body
-
 
   const { user } = await getUserProfile.execute({
     userId,

@@ -1,12 +1,12 @@
 import { InMemoryProductAttachment } from "test/repositories/in-memory-product-attachements";
 import { InMemoryProductsRepository } from "test/repositories/in-memory-products-repository";
 import { InMemoryUsersRepository } from "test/repositories/in-memory-users-repository";
-import { ListProductsBySeller } from "./list-product-by-seller-service";
+import { ListProductsBySellerService } from "./list-product-by-seller-service";
 
 let inMemoryProductRepository: InMemoryProductsRepository
 let inMemoryProductAttachemntsRepository: InMemoryProductAttachment
 let inMemoryUsersRepository: InMemoryUsersRepository
-let sut: ListProductsBySeller
+let sut: ListProductsBySellerService
 
 describe("Create Product", () => {
   beforeEach(() => {
@@ -15,7 +15,7 @@ describe("Create Product", () => {
     inMemoryProductRepository = new InMemoryProductsRepository(
       inMemoryProductAttachemntsRepository,
     )
-    sut = new ListProductsBySeller(inMemoryProductRepository)
+    sut = new ListProductsBySellerService(inMemoryProductRepository)
   })
 
   it('should create a new product', async () => {

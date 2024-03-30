@@ -15,9 +15,7 @@ export function uploadFile(req: Request, res: Response) {
         // error: [error]
       })
     }
-
-    console.log('Uploading file', req.files)
-
+    
     const CreateProductAttachmentService = makeProductAttachmentService()
 
     if (!req.files || req.files.length == 0) {
