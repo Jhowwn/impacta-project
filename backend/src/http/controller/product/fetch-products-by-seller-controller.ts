@@ -31,7 +31,7 @@ export async function FetchProductsBySellerController(req: Request, res: Respons
       return res.status(404).send({ message: 'Product not found!' })
     }
 
-    return res.status(201).send(result.products);
+    return res.status(200).send(result.products);
   } catch (error) {
     if (error instanceof z.ZodError) {
       return res.status(400).json({ message: 'Dados inválidos', details: error.errors });
