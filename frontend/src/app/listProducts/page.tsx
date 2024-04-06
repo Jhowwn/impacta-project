@@ -1,6 +1,7 @@
 'use client'
 
 import { api } from '@/api/baseUrl';
+import { Box, Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import styles from './listProducts.module.scss';
 
@@ -33,25 +34,35 @@ export default function ListProducts() {
     fetchProducts()
   }, [])
 
-  console.log(listProduct.map(product => product.Attachment[0].url[0]))
   return (
     <div className={styles.container}>
-      {
-        listProduct.map((product) => (
-          <div key={product.id}>
-            <p>{product.name}</p>
-            <p>{product.description}</p>
-            <p>{product.price}</p>
-            <p>{product.stock}</p>
-            <p>{product.created_at}</p>
-            {
-              product.Attachment.map(attachment => (
-                <img key={attachment.id} src={attachment.url} width={200} height={200} alt='' />
-                ))
-              }
-          </div>
-        ))
-      }
-    </div>
+
+      <Grid container spacing={2}>
+        {
+          listProduct.map((product) => (
+            <Box
+              key={product.id}
+              className={styles.listProduct}
+            >
+              <Box className={styles.image}>
+                <img src={product.Attachment[0].url} width={'100%'} height={'100%'} alt='' />
+              </Box>
+
+              <Box className={styles.text}>
+                <h2><span>{product.name}</span></h2>
+                <Box className={styles.price}>
+                  <h4>Descrição:</h4>
+                  <span>{product.description}</span>
+                </Box>
+                <Box className={styles.price}>
+                  <span>R$:</span>
+                  <h1>{product.price}</h1>
+                </Box>
+              </Box>
+            </Box>
+          ))
+        }
+      </Grid>
+    </div >
   )
 }

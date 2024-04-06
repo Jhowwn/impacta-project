@@ -1,5 +1,40 @@
 .container {
-  background-color: rgb(139, 133, 133);
+  background-color: rgb(255, 255, 255);
   padding: 1rem;
   min-height: 92vh;
+}
+
+.listProduct {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid var(--gray-100);
+  border-radius: 8px;
+  margin: 2rem 0 0 2rem;
+  flex: 1;
+}
+
+.image {
+  max-width: 240px;
+  padding: 0.5rem;
+  background-color: var(--gray-100);
+}
+
+.text {
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.price {
+  display: flex;
+  flex-direction: row;
+  margin-top: 0.5rem;
+
+  h1 {
+    font-weight: 700;
+    margin-left: 0.5rem;
+  }
+
+  h4 {
+    margin-right: 0.5rem;
+  }
 }
