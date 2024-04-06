@@ -1,7 +1,7 @@
 'use client'
 
 import { api } from '@/api/baseUrl';
-import { Box, Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import { useEffect, useState } from 'react';
 import styles from './listProducts.module.scss';
 
@@ -15,6 +15,7 @@ interface IProduct {
   description: string
   price: string
   stock: number
+  products_sold: number
   created_at: string
   updated_at: string
 }
@@ -34,10 +35,12 @@ export default function ListProducts() {
     fetchProducts()
   }, [])
 
+  console.log(listProduct)
+
   return (
     <div className={styles.container}>
 
-      <Grid container spacing={2}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' }}>
         {
           listProduct.map((product) => (
             <Box
@@ -49,10 +52,20 @@ export default function ListProducts() {
               </Box>
 
               <Box className={styles.text}>
-                <h2><span>{product.name}</span></h2>
+                <Box className={styles.price}>
+                  <h2><span>{product.name}</span></h2>
+                </Box>
                 <Box className={styles.price}>
                   <h4>Descrição:</h4>
                   <span>{product.description}</span>
+                </Box>
+                <Box className={styles.price}>
+                  <h4>Estoque:</h4>
+                  <span>{product.stock}</span>
+                </Box>
+                <Box className={styles.price}>
+                  <h4>Produtos Vendidos:</h4>
+                  <span>{product.products_sold}</span>
                 </Box>
                 <Box className={styles.price}>
                   <span>R$:</span>
@@ -62,7 +75,7 @@ export default function ListProducts() {
             </Box>
           ))
         }
-      </Grid>
+      </Box>
     </div >
   )
 }

@@ -28,16 +28,17 @@ model User {
 }
 
 model Product {
-  id          String       @id @default(uuid())
-  name        String
-  description String
-  price       String
-  stock       Int
-  user        User         @relation(fields: [user_id], references: [id])
-  user_id     String
-  created_at  DateTime     @default(now())
-  updated_at  DateTime?
-  Attachment  Attachment[]
+  id            String       @id @default(uuid())
+  name          String
+  description   String
+  price         String
+  stock         Int
+  products_sold Int          @default(0)
+  user          User         @relation(fields: [user_id], references: [id])
+  user_id       String
+  created_at    DateTime     @default(now())
+  updated_at    DateTime?
+  Attachment    Attachment[]
 
   @@map("products")
 }
