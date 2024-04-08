@@ -16,15 +16,26 @@ enum Roles {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String     @id @default(uuid())
   name          String
-  email         String    @unique
+  email         String     @unique
   password_hash String
-  role          Roles     @default(vendedor)
-  created_at    DateTime  @default(now())
+  role          Roles      @default(vendedor)
+  created_at    DateTime   @default(now())
   Product       Product[]
+  WishList      WishList[]
 
   @@map("users")
+}
+
+model WishList {
+  id         String  @id @default(uuid())
+  user       User    @relation(fields: [user_id], references: [id])
+  product    Product @relation(fields: [product_id], references: [id])
+  user_id    String
+  product_id String
+
+  @@map("wishlist")
 }
 
 model Product {
@@ -39,6 +50,7 @@ model Product {
   created_at    DateTime     @default(now())
   updated_at    DateTime?
   Attachment    Attachment[]
+  WishList      WishList[]
 
   @@map("products")
 }
