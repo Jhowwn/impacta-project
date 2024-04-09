@@ -26,7 +26,8 @@ jobs:
           cache: 'npm'
 
       - run: npm ci
-
+      
+      - run: npm run pretest:e2e
       - run: npm run test:e2e
         env:
           JWT_SECRET: testing
