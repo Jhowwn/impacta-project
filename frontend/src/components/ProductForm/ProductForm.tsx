@@ -1,7 +1,7 @@
-import { FileProps } from '@/app/product/page';
-import { formatMoney } from '@/utils/formatMoney/formatMoney';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { Button, Grid, TextField } from "@mui/material";
+import { FileProps } from '@/app/product/page'
+import { formatMoney } from '@/utils/formatMoney/formatMoney'
+import CloudUploadIcon from '@mui/icons-material/CloudUpload'
+import { Button, Grid, TextField } from '@mui/material'
 
 interface ProductFormProps {
   name: string
@@ -26,9 +26,8 @@ export default function ProductForm({
   stock,
   setStock,
   handleFileChange,
-  selectedFiles
+  selectedFiles,
 }: ProductFormProps) {
-
   return (
     <>
       <Grid container spacing={2} marginBottom={'2rem'}>
@@ -40,7 +39,7 @@ export default function ProductForm({
             color="error"
             label="Nome do Produto"
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             variant="standard"
           />
         </Grid>
@@ -52,7 +51,7 @@ export default function ProductForm({
             color="error"
             label="Descrição"
             value={description}
-            onChange={e => setDescription(e.target.value)}
+            onChange={(e) => setDescription(e.target.value)}
             variant="standard"
           />
         </Grid>
@@ -64,9 +63,9 @@ export default function ProductForm({
             color="error"
             label="Preço"
             value={formatMoney(Number(price))}
-            onChange={e => {
-              const rawValue = e.target.value.replace(/\D/g, '');
-              setPrice((Number(rawValue) / 100).toString());
+            onChange={(e) => {
+              const rawValue = e.target.value.replace(/\D/g, '')
+              setPrice((Number(rawValue) / 100).toString())
             }}
             variant="standard"
           />
@@ -79,16 +78,16 @@ export default function ProductForm({
             color="error"
             label="Estoque"
             value={stock}
-            onChange={e => setStock(parseInt(e.target.value))}
+            onChange={(e) => setStock(parseInt(e.target.value))}
             variant="standard"
           />
         </Grid>
         <Grid item xs={12}>
           <Button
             component="label"
-            color='success'
+            color="success"
             variant="contained"
-            disabled={selectedFiles.length > 2 ? true : false}
+            disabled={selectedFiles.length > 2}
             startIcon={<CloudUploadIcon />}
           >
             Adicionar imagem
@@ -102,5 +101,5 @@ export default function ProductForm({
         </Grid>
       </Grid>
     </>
-  );
+  )
 }

@@ -1,17 +1,17 @@
-"use client"
+'use client'
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState } from 'react'
 
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import DeleteIcon from '@mui/icons-material/Delete';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload'
+import DeleteIcon from '@mui/icons-material/Delete'
 
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton } from '@mui/material'
 
-import { api } from "@/api/baseUrl";
-import styles from './product.module.css';
+import { api } from '@/api/baseUrl'
+import styles from './product.module.css'
 
 interface FileProps {
-  name: string;
+  name: string
 }
 
 export function NewProduct() {
@@ -20,10 +20,14 @@ export function NewProduct() {
   const [price, setPrice] = useState('')
   const [stock, setStock] = useState<number>()
 
-  const [selectedFiles, setSelectedFiles] = useState<FileProps[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<FileProps[]>([])
 
   const handleFileChange = (event: any) => {
-    if (!/^(image\/(jpeg|png))$|^application\/pdf$/.test(event.target.files[0].type)) {
+    if (
+      !/^(image\/(jpeg|png))$|^application\/pdf$/.test(
+        event.target.files[0].type,
+      )
+    ) {
       return alert('Invalid file type: ' + event.target.files[0].type)
     }
 
@@ -35,11 +39,11 @@ export function NewProduct() {
       return alert('File already selected')
     }
 
-    setSelectedFiles([...selectedFiles, ...event.target.files]);
-  };
+    setSelectedFiles([...selectedFiles, ...event.target.files])
+  }
 
   const handleDeleteImage = (name: string) => {
-    const files = selectedFiles.filter(file => file.name !== name)
+    const files = selectedFiles.filter((file) => file.name !== name)
 
     setSelectedFiles(files)
   }
@@ -47,13 +51,13 @@ export function NewProduct() {
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
 
-    const token = localStorage.getItem("token")
+    const token = localStorage.getItem('token')
 
     const data = {
       name,
       description,
       price,
-      stock
+      stock,
     }
 
     if (!name) {
@@ -71,27 +75,29 @@ export function NewProduct() {
       return alert('Estoque do produto é obrigátorio')
     }
 
-    const formData = new FormData();
-    selectedFiles.forEach(file => {
-      formData.append('attachment', file.name);
-    });
-
-    await api.post('products', data, {
-      headers: {
-        'Content-type': 'application/json',
-        Authorization: `Bearer ${token}`
-      }
-    }).then(async response => {
-      await api.post(`produ ct/${response.data.id}/attachment`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
-        }
-      })
+    const formData = new FormData()
+    selectedFiles.forEach((file) => {
+      formData.append('attachment', file.name)
     })
-      .catch(error => {
-        console.error('Erro ao enviar os arquivos:', error);
-      });
+
+    await api
+      .post('products', data, {
+        headers: {
+          'Content-type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(async (response) => {
+        await api.post(`produ ct/${response.data.id}/attachment`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        })
+      })
+      .catch((error) => {
+        console.error('Erro ao enviar os arquivos:', error)
+      })
   }
 
   return (
@@ -99,10 +105,10 @@ export function NewProduct() {
       <h1>Novo Produto</h1>
       <input
         type="text"
-        placeholder='Nome do Produto'
+        placeholder="Nome do Produto"
         className={styles.input}
         value={name}
-        onChange={e => setName(e.target.value)}
+        onChange={(e) => setName(e.target.value)}
       />
 
       {/* <TextField
@@ -114,34 +120,36 @@ export function NewProduct() {
         variant="standard"
       /> */}
       <input
-        type='text'
-        placeholder='Descrição'
+        type="text"
+        placeholder="Descrição"
         className={styles.input}
         value={description}
-        onChange={e => setDescription(e.target.value)}
+        onChange={(e) => setDescription(e.target.value)}
       />
       <input
-        type='text'
-        placeholder='Preço'
+        type="text"
+        placeholder="Preço"
         className={styles.input}
         value={price}
-        onChange={e => setPrice(e.target.value)}
+        onChange={(e) => setPrice(e.target.value)}
       />
       <input
-        type='number'
-        placeholder='Estoque'
+        type="number"
+        placeholder="Estoque"
         className={styles.input}
         value={stock}
-        onChange={e => setStock(e.target.valueAsNumber)}
+        onChange={(e) => setStock(e.target.valueAsNumber)}
       />
 
-      <Button variant="contained" color="secondary" type="submit">Confirmar</Button>
+      <Button variant="contained" color="secondary" type="submit">
+        Confirmar
+      </Button>
 
       <Button
         component="label"
         variant="contained"
         startIcon={<CloudUploadIcon />}
-        disabled={selectedFiles.length > 2 ? true : false}
+        disabled={selectedFiles.length > 2}
       >
         Adicionar imagem
         <input
@@ -151,31 +159,30 @@ export function NewProduct() {
           multiple
         />
       </Button>
-      {selectedFiles.map(file => (
-        <Box key={file.name}
+      {selectedFiles.map((file) => (
+        <Box
+          key={file.name}
           component="section"
           sx={{ p: 2, border: '1px dashed red' }}
-          display='flex'
-          flexDirection='row'
-          flex='1'
+          display="flex"
+          flexDirection="row"
+          flex="1"
           p={2}
-          alignItems='center'
-          justifyContent='space-between'
+          alignItems="center"
+          justifyContent="space-between"
         >
-          <p>
-            {file.name}
-          </p>
+          <p>{file.name}</p>
           <IconButton
             onClick={() => handleDeleteImage(file.name)}
-            size='small'
-            style={{ color: "white" }} sx={{ p: 0, borderRadius: '1px' }}
+            size="small"
+            style={{ color: 'white' }}
+            sx={{ p: 0, borderRadius: '1px' }}
             aria-label="delete"
           >
             <DeleteIcon />
           </IconButton>
         </Box>
-      ))
-      }
+      ))}
     </form>
   )
 }

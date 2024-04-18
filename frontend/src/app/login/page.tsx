@@ -12,11 +12,11 @@ export default function Login() {
   const { signIn } = useContext(AuthContext)
 
   async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
+    event.preventDefault()
 
     const data = {
       email,
-      password
+      password,
     }
 
     await signIn(data)
@@ -28,21 +28,23 @@ export default function Login() {
         <h1>Login</h1>
         <input
           type="email"
-          placeholder='Email'
+          placeholder="Email"
           className={styles.input}
           value={email}
-          onChange={e => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
-          type='password'
-          placeholder='password'
+          type="password"
+          placeholder="password"
           className={styles.input}
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={(e) => setPassword(e.target.value)}
         />
 
-        <Button variant="contained" color="secondary" type="submit">Confirmar</Button>
+        <Button variant="contained" color="secondary" type="submit">
+          Confirmar
+        </Button>
       </form>
     </main>
-  );
+  )
 }

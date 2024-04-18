@@ -1,23 +1,24 @@
-import { Header } from "@/components/Header/Header";
-import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
-import { AuthProvider } from "../../context/AuthContext";
-import "../styles/globals.scss";
+import { Header } from '@/components/Header/Header'
+import type { Metadata } from 'next'
+import { Roboto } from 'next/font/google'
+import React from 'react'
+import { AuthProvider } from '../../context/AuthContext'
+import '../styles/globals.scss'
 
-const roboto = Roboto({ 
+const roboto = Roboto({
   weight: ['100', '400', '700'],
-  subsets: ["latin"],
-  display: 'swap'
- });
+  subsets: ['latin'],
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
-  title: "Compre +",
-};
+  title: 'Compre +',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
@@ -28,5 +29,5 @@ export default function RootLayout({
         </AuthProvider>
       </body>
     </html>
-  );
+  )
 }
