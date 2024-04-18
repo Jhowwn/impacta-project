@@ -1,21 +1,31 @@
 
 import { prisma } from '@/lib/prisma';
 import { Product } from '@prisma/client';
-import { ProductsRepository } from '../product-repository';
+import { IProducts, ProductsRepository } from '../product-repository';
 
 export class PrismaProductsRepository implements ProductsRepository {
-  async findByUserId(userId: string, page: number): Promise<Product[] | null> {
-    const products = await prisma.product.findMany({
-      where: {
-        user_id: userId,
-      },
-      include: {
-        Attachment: true,    
-      },
-      take: 20,
-      skip: (page - 1) * 20,
-    })
-    return products;
+  async findByUserId(userId: string, page: number): Promise<IProducts | null> {
+    const take = 3
+    const [products, total] = await prisma.$transaction([
+      prisma.product.findMany({
+        where: {
+          user_id: userId,
+        },
+        include: {
+          Attachment: true,
+        },
+        skip: (page - 1) * take,
+        take,
+      }),
+      prisma.product.count({ where: { user_id: userId }})
+    ])
+
+    const totalPages = Math.ceil(total / take)
+
+    return {
+      products,
+      totalPages
+    };
   }
 
   async findById(id: string): Promise<Product | null> {

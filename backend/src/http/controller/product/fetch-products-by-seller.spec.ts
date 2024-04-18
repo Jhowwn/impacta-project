@@ -24,7 +24,7 @@ describe('Fetch Product by seller (e2e)', async () => {
       .set('Authorization', `Bearer ${token}`)
 
     expect(response.status).toEqual(200)
-    expect(response.body).toHaveLength(2)
+    expect(response.body.products).toHaveLength(2)
   })
 
   it('should be able to fetch product by seller with pagination', async () => {
@@ -44,6 +44,6 @@ describe('Fetch Product by seller (e2e)', async () => {
       .set('Authorization', `Bearer ${token}`)
 
     expect(response.status).toEqual(200)
-    expect(response.body).toHaveLength(2)
+    expect(response.body.products).toHaveLength(10)
   })
 })
