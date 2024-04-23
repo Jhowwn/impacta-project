@@ -5,7 +5,7 @@ import { IProducts, ProductsRepository } from '../product-repository';
 
 export class PrismaProductsRepository implements ProductsRepository {
   async findByUserId(userId: string, page: number): Promise<IProducts | null> {
-    const take = 3
+    const take = 4
     const [products, total] = await prisma.$transaction([
       prisma.product.findMany({
         where: {
