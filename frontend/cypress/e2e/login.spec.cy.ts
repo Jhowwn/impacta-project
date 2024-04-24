@@ -4,7 +4,7 @@ describe('Login', () => {
       cy.visit('/')
     })
     it('When enter the email field', () => {
-      cy.get('[type="email"]').type('jhonatan1@gmail.com')
+      cy.get('[type="email"]').type('teste@teste.com')
     })
     it('When enter the password field', () => {
       cy.get('[type="password"]').type('123456')
