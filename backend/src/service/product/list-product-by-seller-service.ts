@@ -1,6 +1,5 @@
 import { ProductNotFoundError } from "@/core/errors/Errors/not-product-found";
-import { ProductsRepository } from "@/repositories/product-repository";
-import { Product } from "@prisma/client";
+import { IProducts, ProductsRepository } from "@/repositories/product-repository";
 
 interface ProductServiceRequest {
   userId: string;
@@ -8,7 +7,7 @@ interface ProductServiceRequest {
 }
 
 type ProductServiceResponse = {
-  products: Product[]
+  products: IProducts
 }
 
 export class ListProductsBySellerService {

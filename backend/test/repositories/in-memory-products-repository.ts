@@ -1,11 +1,8 @@
-import { ProductsRepository } from "@/repositories/product-repository";
+import { IProducts, ProductsRepository } from "@/repositories/product-repository";
 import { Prisma, Product } from "@prisma/client";
 import { randomUUID } from "node:crypto";
-import { ProductAttachmentsRepository } from "../../src/repositories/product-attachments-repository";
 
 export class InMemoryProductsRepository implements ProductsRepository {
-  constructor(private productAttachmentsRepository: ProductAttachmentsRepository) { }
-  
   public items: Product[] = []
   
   async findById(id: string): Promise<Product | null> {
@@ -18,10 +15,22 @@ export class InMemoryProductsRepository implements ProductsRepository {
     return product
   }
 
-  async findByUserId(userId: string, page: number): Promise<Product[] | null> {
-    return this.items
+  async findByUserId(userId: string, page: number): Promise<IProducts | null> {
+    const take = 5
+    const allProducts = this.items
     .filter((item) => item.user_id === userId)
-    .slice((page - 1) * 20, page * 20)
+    const productsPerPage = allProducts.slice((page - 1) * take, page * take)
+    const totalPages = allProducts.length
+    
+    let products: IProducts = {
+      products: [],
+      totalPages: 0
+    } 
+
+    products.products = productsPerPage 
+    products.totalPages = Math.ceil(totalPages / take)
+
+    return products
   }
   
   async findByName(name: string): Promise<Product[] | null> {
@@ -41,12 +50,23 @@ export class InMemoryProductsRepository implements ProductsRepository {
       description: data.description,
       price: data.price,
       stock: data.stock,
+      products_sold: data.products_sold ?? 0,
       user_id: data.user_id,
       created_at: new Date(),
       updated_at: new Date() ?? null,
     };
 
-    await this.items.push(product)
+    this.items.push(product)
+
+    return product
+  }
+
+  async update(product: Product): Promise<Product> {
+    const productIndex = this.items.findIndex(item => item.id === product.id)
+    
+    if (productIndex >= 0 ) {
+      this.items[productIndex] = product
+    }
 
     return product
   }

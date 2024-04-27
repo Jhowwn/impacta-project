@@ -9,4 +9,5 @@ export abstract class ProductsRepository {
   abstract findByUserId(userId: string, page: number): Promise<IProducts | null>
   abstract findByName(name: string): Promise<Product[] | null>
   abstract create(product: Prisma.ProductUncheckedCreateInput): Promise<Product>
+  abstract update(product: Product): Promise<Product>
 } 
