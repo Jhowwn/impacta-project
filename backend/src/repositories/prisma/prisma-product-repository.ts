@@ -32,6 +32,8 @@ export class PrismaProductsRepository implements ProductsRepository {
     const product = await prisma.product.findUnique({
       where: {
         id
+      }, include: {
+        Attachment: true,
       },
     })
 
