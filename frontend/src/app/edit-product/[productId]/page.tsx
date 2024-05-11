@@ -66,7 +66,6 @@ export default function UpdateProduct({
       if (product.Attachment.length > 0) {
         for (const file of product.Attachment) {
           file.name = file.id
-          console.log(file)
         }
         setSelectedFiles(product.Attachment)
       }
@@ -160,26 +159,32 @@ export default function UpdateProduct({
       formData.append('attachment', file)
     })
 
+    if (!product) {
+      return handleClickOpen(
+        'Erro ao encontrar Produto',
+        'Entre em contato com: cdxjcmsdjv@gmail.com',
+      )
+    }
+
     try {
-      await api.put(`product/${product?.id}`, data, {
-        headers: {
-          'Content-type': 'application/json',
-        },
-      })
-      // .then(async (response) => {
-      //   await api
-      //     .post(`product/${response.data.id}/attachment`, formData, {
-      //       headers: {
-      //         'Content-Type': 'multipart/form-data',
-      //       },
-      //     })
-      //     .then((response) => {
-      //       console.log(response)
-      //     })
-      // })
-      // .catch((error) => {
-      //   console.error('Erro ao enviar os arquivos:', error)
-      // })
+      await api
+        .put(`product/${product.id}`, data, {
+          headers: {
+            'Content-type': 'application/json',
+          },
+        })
+        .catch((error) => {
+          console.error('Erro ao atualizar produto: ', error)
+        })
+      await api
+        .post(`product/${product.id}/attachment`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .catch((error) => {
+          console.error('Erro ao enviar os arquivos: ', error)
+        })
 
       handleClickOpen('Sucesso', 'Produto alterado com sucesso')
       router.push('/listProducts')
