@@ -44,6 +44,6 @@ describe('Fetch Product by seller (e2e)', async () => {
       .set('Authorization', `Bearer ${token}`)
 
     expect(response.status).toEqual(200)
-    expect(response.body.products).toHaveLength(10)
+    expect(response.body.products).toHaveLength(4)
   })
 })

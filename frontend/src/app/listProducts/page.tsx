@@ -3,10 +3,11 @@
 import { api } from '@/api/baseUrl'
 import { formatMoney } from '@/utils/formatMoney/formatMoney'
 import { Box, Pagination } from '@mui/material'
+import Link from 'next/link'
 import { ChangeEvent, useEffect, useState } from 'react'
 import styles from './listProducts.module.scss'
 
-interface IProduct {
+export interface IProduct {
   Attachment: {
     id: string
     url: string
@@ -51,31 +52,33 @@ export default function ListProducts() {
       <div className={styles.listProducts}>
         {listProduct.map((product) => (
           <div key={product.id} className={styles.listProduct}>
-            <Box className={styles.image}>
-              <img
-                src={product.Attachment[0].url}
-                width="100%"
-                height="250px"
-                alt=""
-              />
-            </Box>
+            <Link href={`edit-product/${product.id}`}>
+              <Box className={styles.image}>
+                <img
+                  src={product.Attachment[0].url}
+                  width="100%"
+                  height="250px"
+                  alt=""
+                />
+              </Box>
 
-            <Box className={styles.text}>
-              <h2 className={styles.name}>
-                <span>{product.name}</span>
-              </h2>
-              <Box className={styles.stock}>
-                <h4>Estoque:</h4>
-                <span>{product.stock}</span>
+              <Box className={styles.text}>
+                <h2 className={styles.name}>
+                  <span>{product.name}</span>
+                </h2>
+                <Box className={styles.stock}>
+                  <h4>Estoque:</h4>
+                  <span>{product.stock}</span>
+                </Box>
+                <Box className={styles.stock}>
+                  <h4>Produtos Vendidos:</h4>
+                  <span>{product.products_sold}</span>
+                </Box>
+                <h1 className={styles.price}>
+                  {formatMoney(Number(product.price))}
+                </h1>
               </Box>
-              <Box className={styles.stock}>
-                <h4>Produtos Vendidos:</h4>
-                <span>{product.products_sold}</span>
-              </Box>
-              <h1 className={styles.price}>
-                {formatMoney(Number(product.price))}
-              </h1>
-            </Box>
+            </Link>
           </div>
         ))}
       </div>
