@@ -16,4 +16,10 @@ export class InMemoryProductAttachment implements ProductAttachmentsRepository {
 
     return attachments
   }
+
+  async delete(productId: string): Promise<void> {
+    const findIndex = this.items.findIndex(attachments => attachments.product_id === productId)
+
+    this.items.splice(findIndex, 1)
+  }
 }

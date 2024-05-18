@@ -20,5 +20,12 @@ export class PrismaProductAttachmentsRepository implements ProductAttachmentsRep
 
     return attachments
   }
-  
+
+  async delete(productId: string) {
+    await prisma.attachment.deleteMany({
+      where: {
+        product_id: productId
+      }
+    })
+  } 
 }
