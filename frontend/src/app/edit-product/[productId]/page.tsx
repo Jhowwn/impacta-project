@@ -2,7 +2,8 @@
 
 import { api } from '@/api/baseUrl'
 import { FileProps } from '@/app/product/page'
-import Alert from '@/components/Alert/Alert'
+import MyAlert, { MessageType } from '@/components/Alert/Alert'
+import ConfirmModal from '@/components/ConfirmModal'
 import ImageDisplay from '@/components/ImagesDisplay/imageDisplay'
 import ProductForm from '@/components/ProductForm/ProductForm'
 import { Button, Grid } from '@mui/material'
@@ -38,8 +39,14 @@ export default function UpdateProduct({
   const [selectedFiles, setSelectedFiles] = useState<FileProps[]>([])
 
   const [alertText, setAlertText] = useState<string>('')
-  const [alertTitle, setAlertTitle] = useState<string>('')
-  const [open, setOpen] = useState(false)
+  const [typeAlert, setTypeAlert] = useState<MessageType>('warning')
+
+  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false)
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null,
+  )
+  const [showConfirmationMessage, setShowConfirmationMessage] =
+    useState<boolean>(false)
 
   useEffect(() => {
     const getProduct = async () => {
@@ -72,14 +79,10 @@ export default function UpdateProduct({
     }
   }, [product])
 
-  const handleClickOpen = (title: string, text: string) => {
-    setOpen(true)
-    setAlertTitle(title)
+  const handleClickOpen = (type: MessageType, text: string) => {
+    setShowConfirmationMessage(true)
+    setTypeAlert(type)
     setAlertText(text)
-  }
-
-  const handleClose = () => {
-    setOpen(false)
   }
 
   const handleFileChange = (event: any) => {
@@ -88,23 +91,17 @@ export default function UpdateProduct({
     for (const file of event.target.files) {
       if (!/^(image\/(jpeg|png))$|^application\/pdf$/.test(file.type)) {
         return handleClickOpen(
-          'Arquivo inválido',
+          'error',
           'Tipo de arquivo inválido: Permitidos jpeg/pnj/jpg',
         )
       }
 
       if (selectedFiles.length + event.target.files.length > 3) {
-        return handleClickOpen(
-          'Multiplas arquivos selecionados',
-          'Arquivos acima do permitido: 3',
-        )
+        return handleClickOpen('error', 'Arquivos acima do permitido: 3')
       }
 
       if (selectedFiles.includes(file.name)) {
-        return handleClickOpen(
-          'Arquivos repetido',
-          'Este arquivo já foi selecionado!',
-        )
+        return handleClickOpen('error', 'Este arquivo já foi selecionado!')
       }
 
       file.url = URL.createObjectURL(file)
@@ -123,28 +120,19 @@ export default function UpdateProduct({
     event.preventDefault()
 
     if (!name) {
-      return handleClickOpen('Nome do Produto', 'Nome do produto é obrigátorio')
+      return handleClickOpen('error', 'Nome do produto é obrigátorio')
     }
 
     if (!description) {
-      return handleClickOpen(
-        'Descrição do Produto',
-        'Descrição do produto é obrigátorio',
-      )
+      return handleClickOpen('error', 'Descrição do produto é obrigátorio')
     }
 
     if (!price) {
-      return handleClickOpen(
-        'Preço do Produto',
-        'Preço do produto é obrigátorio',
-      )
+      return handleClickOpen('error', 'Preço do produto é obrigátorio')
     }
 
     if (!stock) {
-      return handleClickOpen(
-        'Estoque do Produto',
-        'Estoque do produto é obrigátorio',
-      )
+      return handleClickOpen('error', 'Estoque do produto é obrigátorio')
     }
 
     const data = {
@@ -161,7 +149,7 @@ export default function UpdateProduct({
 
     if (!product) {
       return handleClickOpen(
-        'Erro ao encontrar Produto',
+        'error',
         'Entre em contato com: cdxjcmsdjv@gmail.com',
       )
     }
@@ -186,22 +174,50 @@ export default function UpdateProduct({
           console.error('Erro ao enviar os arquivos: ', error)
         })
 
-      handleClickOpen('Sucesso', 'Produto alterado com sucesso')
+      handleClickOpen('success', 'Produto alterado com sucesso')
       router.push('/listProducts')
     } catch (err) {
-      return handleClickOpen('Erro', 'Não foi possivel alterar seu produtp')
+      return handleClickOpen('error', 'Não foi possivel alterar seu produto')
     }
+  }
+
+  const handleDeleteProduct = (productId: string) => {
+    setSelectedProductId(productId)
+    setOpenConfirmModal(true)
+  }
+
+  const handleConfirmDelete = async () => {
+    if (selectedProductId) {
+      try {
+        await api.delete(`/product/${selectedProductId}`, {
+          headers: {
+            'Content-type': 'application/json',
+          },
+        })
+        setShowConfirmationMessage(true)
+      } catch (error) {
+        console.error('Erro ao excluir o produto:', error)
+      } finally {
+        setOpenConfirmModal(false)
+        setSelectedProductId(null)
+      }
+      handleClickOpen('success', 'Produto excluido com sucesso')
+      router.push('/listProducts')
+    }
+  }
+
+  const handleCloseModal = () => {
+    setOpenConfirmModal(false)
+    setSelectedProductId(null)
+  }
+
+  const handleCloseSnackbar = () => {
+    setShowConfirmationMessage(false)
   }
 
   return (
     <main className={styles.main}>
       <h1 className={styles.title}>Editar Produto</h1>
-      <Alert
-        open={open}
-        close={handleClose}
-        title={alertTitle}
-        text={alertText}
-      />
       <form onSubmit={handleSubmit} className={styles.form}>
         <ProductForm
           name={name}
@@ -216,7 +232,7 @@ export default function UpdateProduct({
           selectedFiles={selectedFiles}
         />
         <Grid container spacing={2} marginBottom={'2rem'}>
-          <Grid container>
+          <Grid container gap={2}>
             {selectedFiles.map((file, index) => (
               <ImageDisplay
                 key={file.name}
@@ -228,9 +244,31 @@ export default function UpdateProduct({
         </Grid>
 
         <Button variant="contained" color="success" type="submit">
-          Confirmar
+          Salvar
+        </Button>
+
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => handleDeleteProduct(product.id)}
+        >
+          Excluir
         </Button>
       </form>
+      <ConfirmModal
+        open={openConfirmModal}
+        onClose={handleCloseModal}
+        onConfirm={handleConfirmDelete}
+        title="Confirmar Exclusão"
+        description="Você tem certeza que deseja excluir este produto?"
+      />
+
+      <MyAlert
+        open={showConfirmationMessage}
+        close={handleCloseSnackbar}
+        text={alertText}
+        type={typeAlert}
+      />
     </main>
   )
 }

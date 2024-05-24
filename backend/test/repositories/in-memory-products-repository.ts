@@ -70,4 +70,10 @@ export class InMemoryProductsRepository implements ProductsRepository {
 
     return product
   }
+
+  async delete(productId: string): Promise<void> {
+    const productIndex = this.items.findIndex(item => item.id === productId)
+    
+    this.items.splice(productIndex, 1)
+  }
 }

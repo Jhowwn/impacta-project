@@ -4,7 +4,7 @@ import { UpdateProductService } from "./update-product-service";
 let inMemoryProductRepository: InMemoryProductsRepository
 let sut: UpdateProductService
 
-describe("List Products", () => {
+describe("Update Product", () => {
   beforeEach(() => {
     inMemoryProductRepository = new InMemoryProductsRepository()
     sut = new UpdateProductService(inMemoryProductRepository)
