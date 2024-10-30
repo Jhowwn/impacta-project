@@ -43,6 +43,27 @@ export class InMemoryProductsRepository implements ProductsRepository {
     return product
   }
 
+  async findByNameForSeller(name: string, id: string, page: number): Promise<IProducts | null> {
+    const take = 5
+    const allProducts = this.items.filter(item => item.name === name && item.user_id === id)
+    const productsPerPage = allProducts.slice((page - 1 ) * take, page * take)
+    const totalPages = allProducts.length
+    
+    let products: IProducts = {
+      products: [],
+      totalPages: 0
+    } 
+
+    products.products = productsPerPage 
+    products.totalPages = Math.ceil(totalPages / take)
+
+    if (!products) {
+      return null;
+    }
+
+    return products
+  }
+
   async create(data: Prisma.ProductUncheckedCreateInput): Promise<Product> {
     const product = {
       id: data.id ?? randomUUID(),
