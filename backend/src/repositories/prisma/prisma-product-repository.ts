@@ -4,6 +4,7 @@ import { Product } from '@prisma/client';
 import { IProducts, ProductsRepository } from '../product-repository';
 
 export class PrismaProductsRepository implements ProductsRepository {
+
   async findByUserId(userId: string, page: number): Promise<IProducts | null> {
     const take = 4
     const [products, total] = await prisma.$transaction([
@@ -17,7 +18,7 @@ export class PrismaProductsRepository implements ProductsRepository {
         skip: (page - 1) * take,
         take,
       }),
-      prisma.product.count({ where: { user_id: userId }})
+      prisma.product.count({ where: { user_id: userId } })
     ])
 
     const totalPages = Math.ceil(total / take)
@@ -56,6 +57,41 @@ export class PrismaProductsRepository implements ProductsRepository {
     }
 
     return products
+  }
+
+  async findByNameForSeller(name: string, id: string, page: number): Promise<IProducts | null> {
+    const take = 4
+    const [products, total] = await prisma.$transaction([
+      prisma.product.findMany({
+        where: {
+          user_id: id,
+          name: {
+            contains: name,
+            mode: 'insensitive'
+          },
+        },
+        include: {
+          Attachment: true,
+        },
+        skip: (page - 1) * take,
+        take,
+      }),
+      prisma.product.count({
+        where: {
+          user_id: id, name: {
+            contains: name,
+            mode: 'insensitive'
+          },
+        }
+      })
+    ])
+
+    const totalPages = Math.ceil(total / take)
+
+    return {
+      products,
+      totalPages
+    };
   }
 
   async create(data: Product) {

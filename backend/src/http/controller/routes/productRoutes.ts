@@ -6,6 +6,7 @@ import { CreateProductController } from "../product/create-product-controller";
 import { DeleteProductController } from "../product/delete-product-controller";
 import { FetchProductsBySellerController } from "../product/fetch-products-by-seller-controller";
 import { GetProductController } from "../product/get-product-controller";
+import { ListProductsByNameSellerController } from "../product/list-products-name-for-seller-controller";
 import { UpdateProductController } from "../product/update-product-controller";
 
 export const productRoutes = express.Router();
@@ -17,3 +18,4 @@ productRoutes.put('/product/:id', verifyToken, UpdateProductController)
 productRoutes.delete('/product/:id', verifyToken, DeleteProductController)
 
 productRoutes.get('/fetch-products-by-seller', verifyToken, FetchProductsBySellerController)
+productRoutes.get('/fetch-products-by-name-seller/:name', verifyToken, ListProductsByNameSellerController)
