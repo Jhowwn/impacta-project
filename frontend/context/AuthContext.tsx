@@ -60,12 +60,13 @@ export function AuthProvider({ children }: AuthproviderProps) {
           break
       }
     }
-  }, [])
+  })
 
   useEffect(() => {
     const token = cookies.get('token')
 
     if (token) {
+      console.log('AQUI')
       api
         .get('/me')
         .then((response) => {
@@ -100,8 +101,8 @@ export function AuthProvider({ children }: AuthproviderProps) {
         maxAge: 60 * 60 * 24 * 30,
       })
 
-      api
-        .get('/me')
+      await api
+        .get('/me', { headers: { Authorization: `Bearer ${token}` } })
         .then((response) => {
           if (!response.data) {
             throw new Error('erro')
